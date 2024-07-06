@@ -12,10 +12,7 @@ export class Book extends Document {
 
   @Prop()
   publishedYear: number;
-
-  @Prop()
-  genre: string;
-
+  
   @Prop()
   photo: string; // Ensure this field is present
 }

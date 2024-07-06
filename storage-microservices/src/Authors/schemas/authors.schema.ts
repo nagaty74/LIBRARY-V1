@@ -11,6 +11,7 @@ export class Author extends Document {
 
   @Prop()
   birthDate: Date;
+
 }
 
 export const AuthorSchema = SchemaFactory.createForClass(Author);
