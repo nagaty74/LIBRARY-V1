@@ -1,5 +1,4 @@
-/* eslint-disable prettier/prettier */
-import { Controller, Get, Post, Body, Param, Put, Delete } from '@nestjs/common';
+import { Controller, Get, Post, Put, Delete, Body, Param, Query } from '@nestjs/common';
 import { AuthorsService } from './authors.service';
 import { Author } from './schemas/authors.schema';
 
@@ -30,5 +29,10 @@ export class AuthorsController {
   @Delete(':id')
   async delete(@Param('id') id: string): Promise<Author> {
     return this.authorsService.delete(id);
+  }
+
+  @Get('search')
+  async search(@Query('query') query: string): Promise<Author[]> {
+    return this.authorsService.search(query);
   }
 }

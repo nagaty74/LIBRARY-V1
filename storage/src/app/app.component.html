@@ -70,32 +70,65 @@
   </section>
 
   <section data-bs-version="5.1" class="features4 start cid-udIl9DZwsz" id="features04-1">
-
     <div class="container">
       <div class="row justify-content-center">
         <div class="col-12 content-head">
           <div class="mbr-section-head mb-5">
             <h4 class="mbr-section-title mbr-fonts-style align-center mb-0 display-2">
-              <strong><br></strong><br><strong>Library Items</strong><br><strong><br></strong>
-              <br><hr>
+              <strong><br /></strong><br /><strong>Library Items</strong><br /><strong><br /></strong>
+              <br /><hr />
             </h4>
             <div *ngIf="showEdit" id="editForm" class="mbr-section-title mbr-fonts-style align-center mb-0 display-7">
               <form (ngSubmit)="submitEditForm()">
-                <input type="text" [(ngModel)]="editedItem.title" name="title" placeholder="Title"><br>
-                <input type="text" [(ngModel)]="editedItem.author" name="author" placeholder="Author"><br>
-                <input type="text" [(ngModel)]="editedItem.isbn" name="isbn" placeholder="ISBN"><br>
-                <input type="text" [(ngModel)]="editedItem.photo" name="photo" placeholder="Photo"><br>
+                <!-- Edit form for Books -->
+                <div *ngIf="view === 'books'">
+                  <input type="text" [(ngModel)]="editedItem.title" name="title" placeholder="Title"><br>
+                  <input type="text" [(ngModel)]="editedItem.author" name="author" placeholder="Author"><br>
+                  <input type="text" [(ngModel)]="editedItem.isbn" name="isbn" placeholder="ISBN"><br>
+                  <input type="text" [(ngModel)]="editedItem.photo" name="photo" placeholder="Photo URL"><br>
+                </div>
+  
+                <!-- Edit form for Authors -->
+                <div *ngIf="view === 'authors'">
+                  <input type="text" [(ngModel)]="editedItem.name" name="name" placeholder="Name"><br>
+                  <input type="text" [(ngModel)]="editedItem.bio" name="bio" placeholder="Bio"><br>
+                  <input type="date" [(ngModel)]="editedItem.birthDate" name="birthDate" placeholder="Birth Date"><br>
+                  <input type="text" [(ngModel)]="editedItem.photo" name="photo" placeholder="Photo URL"><br>
+                </div>
+  
+                <!-- Edit form for Members -->
+                <div *ngIf="view === 'members'">
+                  <input type="text" [(ngModel)]="editedItem.name" name="name" placeholder="Name"><br>
+                  <input type="text" [(ngModel)]="editedItem.membershipNumber" name="membershipNumber" placeholder="Membership Number"><br>
+                  <input type="text" [(ngModel)]="editedItem.email" name="email" placeholder="Email"><br>
+                  <input type="text" [(ngModel)]="editedItem.address" name="address" placeholder="Address"><br>
+                  <input type="date" [(ngModel)]="editedItem.joinedDate" name="joinedDate" placeholder="Joined Date"><br>
+                  <input type="text" [(ngModel)]="editedItem.photo" name="photo" placeholder="Photo URL"><br>
+                </div>
+  
+                <!-- Edit form for Loans -->
+                <div *ngIf="view === 'loans'">
+                  <select [(ngModel)]="editedItem.book" name="book">
+                    <option *ngFor="let book of books" [value]="book._id">{{ book.title }}</option>
+                  </select><br>
+                  <select [(ngModel)]="editedItem.member" name="member">
+                    <option *ngFor="let member of members" [value]="member._id">{{ member.name }}</option>
+                  </select><br>
+                  <input type="date" [(ngModel)]="editedItem.loanDate" name="loanDate" placeholder="Loan Date"><br>
+                  <input type="date" [(ngModel)]="editedItem.returnDate" name="returnDate" placeholder="Return Date"><br>
+                </div>
+  
                 <button type="submit" class="btn item-btn btn-primary display-7">Submit</button>
                 <button (click)="cancelEditForm()" class="btn item-btn btn-secondary display-7">Cancel</button>
               </form>
             </div>
-
+  
             <div *ngIf="showDeleteConfirmation" id="deleteConfirmation" class="mbr-section-title mbr-fonts-style align-center mb-0 display-7">
               <p>Are you sure you want to delete?</p>
               <button (click)="confirmDelete()" class="btn item-btn btn-secondary display-7">Yes</button>
               <button (click)="cancelDelete()" class="btn item-btn btn-primary display-7">No</button>
             </div>
-
+  
             <div *ngIf="showAdd" id="addForm" class="mbr-section-title mbr-fonts-style align-center mb-0 display-7">
               <form (ngSubmit)="submitAddForm()">
                 <label>Type:</label>
@@ -127,8 +160,12 @@
                   <input type="text" [(ngModel)]="addedItem.photo" name="photo" placeholder="Photo URL"><br>
                 </div>
                 <div *ngIf="addedItem.view === 'loans'">
-                  <input type="text" [(ngModel)]="addedItem.book" name="book" placeholder="Book"><br>
-                  <input type="text" [(ngModel)]="addedItem.member" name="member" placeholder="Member"><br>
+                  <select [(ngModel)]="addedItem.book" name="book">
+                    <option *ngFor="let book of books" [value]="book._id">{{ book.title }}</option>
+                  </select><br>
+                  <select [(ngModel)]="addedItem.member" name="member">
+                    <option *ngFor="let member of members" [value]="member._id">{{ member.name }}</option>
+                  </select><br>
                   <input type="date" [(ngModel)]="addedItem.loanDate" name="loanDate" placeholder="Loan Date"><br>
                   <input type="date" [(ngModel)]="addedItem.returnDate" name="returnDate" placeholder="Return Date"><br>
                 </div>
@@ -136,40 +173,15 @@
                 <button (click)="cancelAddForm()" class="btn item-btn btn-secondary display-7">Cancel</button>
               </form>
             </div>
-
           </div>
         </div>
       </div>
-
-      <div class="row" *ngIf="view == 'all'">
-        <div class="item features-image col-12 col-md-6 col-lg-4" *ngFor="let item of allItems">
-          <div class="item-wrapper">
-            <div class="item-img">
-              <img src="{{item.photo}}" alt="Mobirise Website Builder">
-            </div>
-            <div class="item-content">
-              <h5 class="item-title mbr-fonts-style display-5">
-                <strong>{{item.title}}</strong>
-              </h5>
-              <ul>
-                <li class="item-text mbr-fonts-style display-7">Title: {{item.title}}</li>
-                <li class="item-text mbr-fonts-style display-7">Author: {{item.author}}</li>
-                <li class="item-text mbr-fonts-style display-7">ISBN: {{item.isbn}}</li>
-              </ul>
-              <div class="mbr-section-btn item-footer">
-                <a href="#" class="btn item-btn btn-primary display-7" (click)="showEditForm(item._id, 'books')">Edit</a>
-                <a href="#" class="btn item-btn btn-secondary display-7" (click)="askDeleteConfirmation(item._id, 'books')">Delete</a>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <div class="row" *ngIf="view == 'books'">
+  
+      <div class="row" *ngIf="view === 'books'">
         <div class="item features-image col-12 col-md-6 col-lg-4" *ngFor="let book of books">
           <div class="item-wrapper">
             <div class="item-img">
-              <img src="{{book.photo}}" alt="Mobirise Website Builder">
+              <img [src]="book.photo" alt="{{book.title}}"> <!-- Use [src] to bind the image URL -->
             </div>
             <div class="item-content">
               <h5 class="item-title mbr-fonts-style display-5">
@@ -188,12 +200,12 @@
           </div>
         </div>
       </div>
-
+  
       <div class="row" *ngIf="view == 'authors'">
         <div class="item features-image col-12 col-md-6 col-lg-4" *ngFor="let author of authors">
           <div class="item-wrapper">
             <div class="item-img">
-              <img src="{{author.photo}}" alt="Mobirise Website Builder">
+              <img [src]="author.photo" alt="{{author.name}}"> <!-- Use [src] to bind the image URL -->
             </div>
             <div class="item-content">
               <h5 class="item-title mbr-fonts-style display-5">
@@ -211,12 +223,12 @@
           </div>
         </div>
       </div>
-
+  
       <div class="row" *ngIf="view == 'members'">
         <div class="item features-image col-12 col-md-6 col-lg-4" *ngFor="let member of members">
           <div class="item-wrapper">
             <div class="item-img">
-              <img src="{{member.photo}}" alt="Member Photo">
+              <img [src]="member.photo" alt="{{member.name}}"> <!-- Use [src] to bind the image URL -->
             </div>
             <div class="item-content">
               <h5 class="item-title mbr-fonts-style display-5">
@@ -225,9 +237,6 @@
               <ul>
                 <li class="item-text mbr-fonts-style display-7">Name: {{member.name}}</li>
                 <li class="item-text mbr-fonts-style display-7">Membership Date: {{member.membershipDate}}</li>
-                <li class="item-text mbr-fonts-style display-7">Email: {{member.email}}</li>
-                <li class="item-text mbr-fonts-style display-7">Address: {{member.address}}</li>
-                <li class="item-text mbr-fonts-style display-7">Joined Date: {{member.joinedDate | date}}</li>
               </ul>
               <div class="mbr-section-btn item-footer">
                 <a href="#" class="btn item-btn btn-primary display-7" (click)="showEditForm(member._id, 'members')">Edit</a>
@@ -237,21 +246,21 @@
           </div>
         </div>
       </div>
-
+  
       <div class="row" *ngIf="view == 'loans'">
         <div class="item features-image col-12 col-md-6 col-lg-4" *ngFor="let loan of loans">
           <div class="item-wrapper">
             <div class="item-img">
-              <img src="{{loan.photo}}" alt="Mobirise Website Builder">
+              <img [src]="loan.book.photo" alt="{{loan.book.title}}"> <!-- Use [src] to bind the image URL -->
             </div>
             <div class="item-content">
               <h5 class="item-title mbr-fonts-style display-5">
-                <strong>{{loan.bookTitle}}</strong>
+                <strong>{{loan.book.title}}</strong>
               </h5>
               <ul>
-                <li class="item-text mbr-fonts-style display-7">Book Title: {{loan.bookTitle}}</li>
-                <li class="item-text mbr-fonts-style display-7">Member: {{loan.memberName}}</li>
-                <li class="item-text mbr-fonts-style display-7">Due Date: {{loan.dueDate | date}}</li>
+                <li class="item-text mbr-fonts-style display-7">Book Title: {{loan.book.title}}</li>
+                <li class="item-text mbr-fonts-style display-7">Member: {{loan.member.name}}</li>
+                <li class="item-text mbr-fonts-style display-7">Due Date: {{loan.returnDate | date}}</li>
               </ul>
               <div class="mbr-section-btn item-footer">
                 <a href="#" class="btn item-btn btn-primary display-7" (click)="showEditForm(loan._id, 'loans')">Edit</a>
@@ -261,7 +270,6 @@
           </div>
         </div>
       </div>
-
     </div>
   </section>
 

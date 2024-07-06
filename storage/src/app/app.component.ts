@@ -8,196 +8,237 @@ import { HttpClient } from '@angular/common/http';
 })
 export class AppComponent {
   title = 'library';
-
-  apiUrl: any = 'http://localhost:3000/';
-  allItems: any = [];
-  view: any;
-  books: any;
-  authors: any;
-  members: any;
-  loans: any;
+  apiUrl: string = 'http://localhost:3000';
+  books: any[] = [];
+  authors: any[] = [];
+  members: any[] = [];
+  loans: any[] = [];
+  view: string = 'books';
+  showAdd: boolean = false;
   showEdit: boolean = false;
   showDeleteConfirmation: boolean = false;
   editedItem: any = {};
   addedItem: any = {};
-  beingEditiedId: any;
-  beingEditiedView: any;
-  beingDeletedId: any;
-  beingDeletedView: any;
-  dataToSend: any = {};
-  showAdd: any;
-  searchItemName: any;
-  found: boolean = false;
-  foundItemDetails: any;
+  beingEditedId: string | null = null;
+  beingDeletedId: string | null = null;
 
-  constructor(private http: HttpClient) { }
+  constructor(private http: HttpClient) {}
 
   ngOnInit(): void {
-    this.setView('all');
-    this.getAll();
+    this.getAllBooks();
+    this.getAllAuthors();
+    this.getAllMembers();
+    this.getAllLoans();
   }
 
-  getAll(): void {
-    this.allItems = [];
-
-    this.http.get(this.apiUrl + 'books').subscribe(
-      (data) => {
-        this.books = data;
-        this.books.forEach((item: any) => {
-          this.allItems.push(item);
-        });
-      });
-
-    this.http.get(this.apiUrl + 'authors').subscribe(
-      (data) => {
-        this.authors = data;
-        this.authors.forEach((item: any) => {
-          this.allItems.push(item);
-        });
-      });
-
-    this.http.get(this.apiUrl + 'members').subscribe(
-      (data) => {
-        this.members = data;
-        this.members.forEach((item: any) => {
-          this.allItems.push(item);
-        });
-      });
-
-    this.http.get(this.apiUrl + 'loans').subscribe((data) => {
-      this.loans = data;
-      this.loans.forEach((item: any) => {
-        this.allItems.push(item);
-      });
+  getAllBooks(): void {
+    this.http.get<any[]>(`${this.apiUrl}/books`).subscribe(data => {
+      this.books = data;
     });
+  }
+
+  getAllAuthors(): void {
+    this.http.get<any[]>(`${this.apiUrl}/authors`).subscribe(data => {
+      this.authors = data;
+    });
+  }
+
+  getAllMembers(): void {
+    this.http.get<any[]>(`${this.apiUrl}/members`).subscribe(data => {
+      this.members = data;
+    });
+  }
+
+  getAllLoans(): void {
+    this.http.get<any[]>(`${this.apiUrl}/loans`).subscribe(data => {
+      this.loans = data;
+    });
+  }
+
+  submitAddForm(): void {
+    let endpoint: string = '';
+    let dataToSend: any = {};
+
+    switch (this.addedItem.view) {
+      case 'books':
+        if (!this.addedItem.title || !this.addedItem.author || !this.addedItem.publishedYear || !this.addedItem.genre || !this.addedItem.photo) {
+          alert('Please fill all the fields');
+          return;
+        }
+        dataToSend = {
+          title: this.addedItem.title,
+          author: this.addedItem.author,
+          publishedYear: parseInt(this.addedItem.publishedYear, 10),
+          genre: this.addedItem.genre,
+          photo: this.addedItem.photo
+        };
+        endpoint = 'books';
+        break;
+      case 'authors':
+        if (!this.addedItem.name || !this.addedItem.bio || !this.addedItem.birthDate || !this.addedItem.photo) {
+          alert('Please fill all the fields');
+          return;
+        }
+        dataToSend = {
+          name: this.addedItem.name,
+          bio: this.addedItem.bio,
+          birthDate: new Date(this.addedItem.birthDate),
+          photo: this.addedItem.photo
+        };
+        endpoint = 'authors';
+        break;
+      case 'members':
+        if (!this.addedItem.name || !this.addedItem.membershipNumber || !this.addedItem.email || !this.addedItem.address || !this.addedItem.joinedDate || !this.addedItem.photo) {
+          alert('Please fill all the fields');
+          return;
+        }
+        dataToSend = {
+          name: this.addedItem.name,
+          membershipNumber: this.addedItem.membershipNumber,
+          email: this.addedItem.email,
+          address: this.addedItem.address,
+          joinedDate: new Date(this.addedItem.joinedDate),
+          photo: this.addedItem.photo
+        };
+        endpoint = 'members';
+        break;
+      case 'loans':
+        if (!this.addedItem.book || !this.addedItem.member || !this.addedItem.loanDate) {
+          alert('Please fill all the fields');
+          return;
+        }
+        dataToSend = {
+          book: this.addedItem.book,
+          member: this.addedItem.member,
+          loanDate: new Date(this.addedItem.loanDate),
+          returnDate: this.addedItem.returnDate ? new Date(this.addedItem.returnDate) : undefined
+        };
+        endpoint = 'loans';
+        break;
+    }
+
+    this.http.post(`${this.apiUrl}/${endpoint}`, dataToSend).subscribe(() => {
+      this.showAdd = false;
+      this.addedItem = {};
+      this.getAllBooks();
+      this.getAllAuthors();
+      this.getAllMembers();
+      this.getAllLoans();
+    });
+  }
+
+  showEditForm(id: string, view: string): void {
+    this.showEdit = true;
+    this.beingEditedId = id;
+    this.view = view;
+
+    switch (view) {
+      case 'books':
+        this.editedItem = this.books.find(book => book._id === id);
+        break;
+      case 'authors':
+        this.editedItem = this.authors.find(author => author._id === id);
+        break;
+      case 'members':
+        this.editedItem = this.members.find(member => member._id === id);
+        break;
+      case 'loans':
+        this.editedItem = this.loans.find(loan => loan._id === id);
+        break;
+    }
+  }
+
+  cancelEditForm(): void {
+    this.showEdit = false;
+    this.editedItem = {};
+    this.beingEditedId = null;
+  }
+
+  submitEditForm(): void {
+    let endpoint: string = '';
+    let dataToSend: any = {};
+
+    switch (this.view) {
+      case 'books':
+        dataToSend = {
+          title: this.editedItem.title,
+          author: this.editedItem.author,
+          publishedYear: parseInt(this.editedItem.publishedYear, 10),
+          genre: this.editedItem.genre,
+          photo: this.editedItem.photo
+        };
+        endpoint = 'books';
+        break;
+      case 'authors':
+        dataToSend = {
+          name: this.editedItem.name,
+          bio: this.editedItem.bio,
+          birthDate: new Date(this.editedItem.birthDate),
+          photo: this.editedItem.photo
+        };
+        endpoint = 'authors';
+        break;
+      case 'members':
+        dataToSend = {
+          name: this.editedItem.name,
+          membershipNumber: this.editedItem.membershipNumber,
+          email: this.editedItem.email,
+          address: this.editedItem.address,
+          joinedDate: new Date(this.editedItem.joinedDate),
+          photo: this.editedItem.photo
+        };
+        endpoint = 'members';
+        break;
+      case 'loans':
+        dataToSend = {
+          book: this.editedItem.book,
+          member: this.editedItem.member,
+          loanDate: new Date(this.editedItem.loanDate),
+          returnDate: new Date(this.editedItem.returnDate)
+        };
+        endpoint = 'loans';
+        break;
+    }
+
+    this.http.put(`${this.apiUrl}/${endpoint}/${this.beingEditedId}`, dataToSend).subscribe(() => {
+      this.showEdit = false;
+      this.editedItem = {};
+      this.beingEditedId = null;
+      this.getAllBooks();
+      this.getAllAuthors();
+      this.getAllMembers();
+      this.getAllLoans();
+    });
+  }
+
+  askDeleteConfirmation(id: string, view: string): void {
+    this.showDeleteConfirmation = true;
+    this.beingDeletedId = id;
+    this.view = view;
+  }
+
+  confirmDelete(): void {
+    this.http.delete(`${this.apiUrl}/${this.view}/${this.beingDeletedId}`).subscribe(() => {
+      this.showDeleteConfirmation = false;
+      this.beingDeletedId = null;
+      this.getAllBooks();
+      this.getAllAuthors();
+      this.getAllMembers();
+      this.getAllLoans();
+    });
+  }
+
+  cancelDelete(): void {
+    this.showDeleteConfirmation = false;
+    this.beingDeletedId = null;
   }
 
   setView(view: string): void {
     this.view = view;
   }
 
-  showEditForm(id: string, view: string) {
-    this.showEdit = true;
-    this.beingEditiedId = id;
-    this.beingEditiedView = view;
-    this.showAdd = false;
-    this.showDeleteConfirmation = false;
-  }
-
-  cancelEditForm() {
-    this.showEdit = false;
-    this.beingEditiedId = '';
-    this.beingEditiedView = '';
-  }
-
-  submitEditForm() {
-    if (this.editedItem.name != '') { this.dataToSend['name'] = this.editedItem.name }
-    if (this.editedItem.author != '') { this.dataToSend['author'] = this.editedItem.author }
-    if (this.editedItem.publishedYear != '') { let stringValue: string = this.editedItem.publishedYear; let intValue: number = +stringValue; this.dataToSend['publishedYear'] = (Number.isNaN(intValue)) ? undefined : intValue }
-    if (this.editedItem.genre != '') { this.dataToSend['genre'] = this.editedItem.genre }
-    if (this.editedItem.photo != '') { this.dataToSend['photo'] = this.editedItem.photo }
-
-    this.http.put(this.apiUrl + this.beingEditiedView + '/' + this.beingEditiedId, this.dataToSend).subscribe((response) => {
-      this.getAll();
-      this.showEdit = false;
-      this.editedItem = {};
-      this.beingEditiedId = '';
-      this.beingEditiedView = '';
-      this.dataToSend = {};
-    });
-  }
-
-  askDeleteConfirmation(id: string, view: string) {
-    this.showDeleteConfirmation = true;
-    this.beingDeletedId = id;
-    this.beingDeletedView = view;
-    this.showAdd = false;
-    this.showEdit = false;
-  }
-
-  confirmDelete() {
-    this.http.delete(this.apiUrl + this.beingDeletedView + '/' + this.beingDeletedId).subscribe((response) => {
-      this.getAll();
-      this.showDeleteConfirmation = false;
-      this.beingDeletedId = '';
-      this.beingDeletedView = '';
-    });
-  }
-
-  cancelDelete() {
-    this.showDeleteConfirmation = false;
-    this.beingDeletedId = '';
-    this.beingDeletedView = '';
-  }
-
-  submitAddForm(): void {
-    this.dataToSend = {};
-  
-    if (this.addedItem.view === 'books') {
-      if (!this.addedItem.title || !this.addedItem.author || !this.addedItem.publishedYear || !this.addedItem.genre || !this.addedItem.photo) {
-        alert('Please fill all the fields');
-        return;
-      }
-      this.dataToSend = {
-        title: this.addedItem.title,
-        author: this.addedItem.author,
-        publishedYear: parseInt(this.addedItem.publishedYear, 10),
-        genre: this.addedItem.genre,
-        photo: this.addedItem.photo
-      };
-    } else if (this.addedItem.view === 'authors') {
-      if (!this.addedItem.name || !this.addedItem.bio || !this.addedItem.photo) {
-        alert('Please fill all the fields');
-        return;
-      }
-      this.dataToSend = {
-        name: this.addedItem.name,
-        bio: this.addedItem.bio,
-        birthDate: new Date(this.addedItem.birthDate),
-        photo: this.addedItem.photo // Add this line to include photo
-      };
-    } else if (this.addedItem.view === 'members') {
-      if (!this.addedItem.name || !this.addedItem.membershipNumber || !this.addedItem.email || !this.addedItem.address || !this.addedItem.joinedDate || !this.addedItem.photo) {
-        alert('Please fill all the fields');
-        return;
-      }
-      this.dataToSend = {
-        name: this.addedItem.name,
-        membershipNumber: this.addedItem.membershipNumber,
-        email: this.addedItem.email,
-        address: this.addedItem.address,
-        joinedDate: new Date(this.addedItem.joinedDate),
-        photo: this.addedItem.photo // Add this line to include photo
-      };
-    } else if (this.addedItem.view === 'loans') {
-      if (!this.addedItem.book || !this.addedItem.member || !this.addedItem.loanDate) {
-        alert('Please fill all the fields');
-        return;
-      }
-      this.dataToSend = {
-        book: this.addedItem.book,
-        member: this.addedItem.member,
-        loanDate: new Date(this.addedItem.loanDate),
-        returnDate: this.addedItem.returnDate ? new Date(this.addedItem.returnDate) : undefined
-      };
-    }
-  
-    this.http.post(this.apiUrl + this.addedItem.view, this.dataToSend).subscribe(() => {
-      this.showAdd = false;
-      this.getAll();
-    });
-  }
-  
-
   cancelAddForm(): void {
     this.showAdd = false;
-  }
-
-  search(): any {
-    this.foundItemDetails = this.allItems.filter((item: { title: string; }) => item.title.toLowerCase().includes(this.searchItemName.toLowerCase()));
-    if (this.foundItemDetails.length != 0) {
-      this.foundItemDetails = this.foundItemDetails[0];
-      this.found = true;
-    }
+    this.addedItem = {};
   }
 }

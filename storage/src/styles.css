@@ -1,1 +1,27 @@
 /* You can add global styles to this file, and also import other style files */
+.btn-primary {
+    background-color: blue !important;
+    color: white !important;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 5px;
+    cursor: pointer;
+  }
+  
+  .btn-secondary {
+    background-color: red !important;
+    color: white !important;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 5px;
+    cursor: pointer;
+  }
+  
+  .btn-primary:hover {
+    background-color: darkblue !important;
+  }
+  
+  .btn-secondary:hover {
+    background-color: darkred !important;
+  }
+  

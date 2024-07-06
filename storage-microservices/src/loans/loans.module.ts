@@ -1,15 +1,19 @@
+// loans.module.ts
 import { Module } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
-import { LoansController } from './loans.controller';
-import { LoansService } from './loans.service';
 import { Loan, LoanSchema } from './schemas/loans.schema';
+import { LoansService } from './loans.service';
+import { LoansController } from './loans.controller';
+import { BooksModule } from '../books/books.module';
+import { MembersModule } from '../members/members.module';
 
 @Module({
   imports: [
     MongooseModule.forFeature([{ name: Loan.name, schema: LoanSchema }]),
+    BooksModule,  // Import BooksModule
+    MembersModule, // Import MembersModule
   ],
-  controllers: [LoansController],
   providers: [LoansService],
-  exports: [LoansService],
+  controllers: [LoansController],
 })
 export class LoansModule {}

@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Param, Put, Delete } from '@nestjs/common';
+import { Controller, Get, Post, Put, Delete, Body, Param, Query } from '@nestjs/common';
 import { BooksService } from './books.service';
 import { Book } from './schemas/books.schema';
 
@@ -29,5 +29,10 @@ export class BooksController {
   @Delete(':id')
   async delete(@Param('id') id: string): Promise<Book> {
     return this.booksService.delete(id);
+  }
+
+  @Get('search')
+  async search(@Query('query') query: string): Promise<Book[]> {
+    return this.booksService.search(query);
   }
 }

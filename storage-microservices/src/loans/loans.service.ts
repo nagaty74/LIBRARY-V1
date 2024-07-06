@@ -1,4 +1,3 @@
-/* eslint-disable prettier/prettier */
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
@@ -27,5 +26,9 @@ export class LoansService {
 
   async delete(id: string): Promise<Loan> {
     return this.loanModel.findOneAndDelete({ _id: id }).exec();
+  }
+
+  async search(query: string): Promise<Loan[]> {
+    return this.loanModel.find({ 'book.title': { $regex: query, $options: 'i' } }).populate('book').exec();
   }
 }

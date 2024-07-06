@@ -1,5 +1,4 @@
-/* eslint-disable prettier/prettier */
-import { Controller, Get, Post, Body, Param, Put, Delete } from '@nestjs/common';
+import { Controller, Get, Post, Put, Delete, Body, Param, Query } from '@nestjs/common';
 import { LoansService } from './loans.service';
 import { Loan } from './schemas/loans.schema';
 
@@ -30,5 +29,10 @@ export class LoansController {
   @Delete(':id')
   async delete(@Param('id') id: string): Promise<Loan> {
     return this.loansService.delete(id);
+  }
+
+  @Get('search')
+  async search(@Query('query') query: string): Promise<Loan[]> {
+    return this.loansService.search(query);
   }
 }
