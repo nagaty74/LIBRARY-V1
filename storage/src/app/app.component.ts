@@ -35,9 +35,13 @@ export class AppComponent {
   getAllBooks(): void {
     const params = this.searchQuery ? new HttpParams().set('query', this.searchQuery) : new HttpParams();
     this.http.get<any[]>(`${this.apiUrl}/books`, { params }).subscribe(data => {
-      this.books = data;
+      this.books = data.map(book => ({
+        ...book,
+        isbn: book.isbn || ''  // Ensure ISBN is included, default to empty string if not available
+      }));
     });
   }
+  
 
   getAllAuthors(): void {
     const params = this.searchQuery ? new HttpParams().set('query', this.searchQuery) : new HttpParams();
@@ -78,7 +82,7 @@ export class AppComponent {
 
     switch (this.addedItem.view) {
       case 'books':
-        if (!this.addedItem.title || !this.addedItem.author || !this.addedItem.publishedYear || !this.addedItem.genre || !this.addedItem.photo) {
+        if (!this.addedItem.title || !this.addedItem.author || !this.addedItem.publishedYear || !this.addedItem.genre || !this.addedItem.isbn || !this.addedItem.photo) {
           alert('Please fill all the fields');
           return;
         }
@@ -87,6 +91,7 @@ export class AppComponent {
           author: this.addedItem.author,
           publishedYear: parseInt(this.addedItem.publishedYear, 10),
           genre: this.addedItem.genre,
+          isbn: this.addedItem.isbn,
           photo: this.addedItem.photo
         };
         endpoint = 'books';

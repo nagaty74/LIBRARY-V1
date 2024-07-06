@@ -2,13 +2,7 @@
 <html>
 
 <body>
-
   <section data-bs-version="5.1" class="menu menu5 cid-udIl27BACG" once="menu" id="menu05-0">
-    <div class="search-bar" style="margin-top: 100px; text-align: center;">
-      <input type="text" [(ngModel)]="searchQuery" placeholder="Search..." />
-      <button (click)="search()" class="btn btn-primary">Search</button>
-    </div>
-    
     <nav class="navbar navbar-dropdown navbar-fixed-top navbar-expand-lg">
       <div class="container">
         <div class="navbar-brand">
@@ -29,7 +23,6 @@
         </button>
         <div class="collapse navbar-collapse" id="navbarSupportedContent">
           <ul class="navbar-nav nav-dropdown nav-right" data-app-modern-menu="true">
-        
             <li class="nav-item" *ngIf="view != 'books'">
               <button class="nav-link link text-black display-4" (click)="setView('books')">Books</button>
             </li>
@@ -57,11 +50,7 @@
             <li class="nav-item">
               <button class="nav-link link text-black display-4" (click)="showAdd = true">Add An Item</button>
             </li>
-            <li class="nav-item">
-              <button class="nav-link link text-black display-4" (click)="setView('search')">Search</button>
-            </li>
           </ul>
-
         </div>
       </div>
     </nav>
@@ -76,6 +65,12 @@
               <strong><br /></strong><br /><strong>Library Items</strong><br /><strong><br /></strong>
               <br /><hr />
             </h4>
+
+            <div class="input-group mb-3">
+              <input type="text" class="form-control" placeholder="Search..." [(ngModel)]="searchQuery">
+              <button class="btn btn-primary" type="button" (click)="search()">Search</button>
+            </div>
+
             <div *ngIf="showEdit" id="editForm" class="mbr-section-title mbr-fonts-style align-center mb-0 display-7">
               <form (ngSubmit)="submitEditForm()">
                 <!-- Edit form for Books -->
@@ -141,6 +136,7 @@
                   <input type="text" [(ngModel)]="addedItem.author" name="author" placeholder="Author"><br>
                   <input type="text" [(ngModel)]="addedItem.publishedYear" name="publishedYear" placeholder="Published Year"><br>
                   <input type="text" [(ngModel)]="addedItem.genre" name="genre" placeholder="Genre"><br>
+                  <input type="text" [(ngModel)]="addedItem.isbn" name="isbn" placeholder="ISBN"><br>
                   <input type="text" [(ngModel)]="addedItem.photo" name="photo" placeholder="Photo URL"><br>
                 </div>
                 <div *ngIf="addedItem.view === 'authors'">
@@ -220,7 +216,7 @@
             </div>
           </div>
         </div>
-      </div>
+      </div>      
   
       <div class="row" *ngIf="view == 'members'">
         <div class="item features-image col-12 col-md-6 col-lg-4" *ngFor="let member of members">
@@ -270,6 +266,5 @@
       </div>
     </div>
   </section>
-
 </body>
 </html>
