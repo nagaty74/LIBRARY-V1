@@ -12,7 +12,10 @@ export class BooksController {
   }
 
   @Get()
-  async findAll(): Promise<Book[]> {
+  async findAll(@Query('query') query: string): Promise<Book[]> {
+    if (query) {
+      return this.booksService.search(query);
+    }
     return this.booksService.findAll();
   }
 
@@ -29,10 +32,5 @@ export class BooksController {
   @Delete(':id')
   async delete(@Param('id') id: string): Promise<Book> {
     return this.booksService.delete(id);
-  }
-
-  @Get('search')
-  async search(@Query('query') query: string): Promise<Book[]> {
-    return this.booksService.search(query);
   }
 }

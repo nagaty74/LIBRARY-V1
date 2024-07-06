@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpParams } from '@angular/common/http';
 
 @Component({
   selector: 'app-root',
@@ -21,6 +21,7 @@ export class AppComponent {
   addedItem: any = {};
   beingEditedId: string | null = null;
   beingDeletedId: string | null = null;
+  searchQuery: string = '';
 
   constructor(private http: HttpClient) {}
 
@@ -32,27 +33,43 @@ export class AppComponent {
   }
 
   getAllBooks(): void {
-    this.http.get<any[]>(`${this.apiUrl}/books`).subscribe(data => {
+    const params = this.searchQuery ? new HttpParams().set('query', this.searchQuery) : new HttpParams();
+    this.http.get<any[]>(`${this.apiUrl}/books`, { params }).subscribe(data => {
       this.books = data;
     });
   }
 
   getAllAuthors(): void {
-    this.http.get<any[]>(`${this.apiUrl}/authors`).subscribe(data => {
+    const params = this.searchQuery ? new HttpParams().set('query', this.searchQuery) : new HttpParams();
+    this.http.get<any[]>(`${this.apiUrl}/authors`, { params }).subscribe(data => {
       this.authors = data;
     });
   }
 
   getAllMembers(): void {
-    this.http.get<any[]>(`${this.apiUrl}/members`).subscribe(data => {
+    const params = this.searchQuery ? new HttpParams().set('query', this.searchQuery) : new HttpParams();
+    this.http.get<any[]>(`${this.apiUrl}/members`, { params }).subscribe(data => {
       this.members = data;
     });
   }
 
   getAllLoans(): void {
-    this.http.get<any[]>(`${this.apiUrl}/loans`).subscribe(data => {
+    const params = this.searchQuery ? new HttpParams().set('query', this.searchQuery) : new HttpParams();
+    this.http.get<any[]>(`${this.apiUrl}/loans`, { params }).subscribe(data => {
       this.loans = data;
     });
+  }
+
+  search(): void {
+    if (this.view === 'books') {
+      this.getAllBooks();
+    } else if (this.view === 'authors') {
+      this.getAllAuthors();
+    } else if (this.view === 'members') {
+      this.getAllMembers();
+    } else if (this.view === 'loans') {
+      this.getAllLoans();
+    }
   }
 
   submitAddForm(): void {
@@ -120,10 +137,7 @@ export class AppComponent {
     this.http.post(`${this.apiUrl}/${endpoint}`, dataToSend).subscribe(() => {
       this.showAdd = false;
       this.addedItem = {};
-      this.getAllBooks();
-      this.getAllAuthors();
-      this.getAllMembers();
-      this.getAllLoans();
+      this.search();
     });
   }
 
@@ -131,26 +145,10 @@ export class AppComponent {
     this.showEdit = true;
     this.beingEditedId = id;
     this.view = view;
-
-    switch (view) {
-      case 'books':
-        this.editedItem = this.books.find(book => book._id === id);
-        break;
-      case 'authors':
-        this.editedItem = this.authors.find(author => author._id === id);
-        break;
-      case 'members':
-        this.editedItem = this.members.find(member => member._id === id);
-        break;
-      case 'loans':
-        this.editedItem = this.loans.find(loan => loan._id === id);
-        break;
-    }
   }
 
   cancelEditForm(): void {
     this.showEdit = false;
-    this.editedItem = {};
     this.beingEditedId = null;
   }
 
@@ -204,10 +202,7 @@ export class AppComponent {
       this.showEdit = false;
       this.editedItem = {};
       this.beingEditedId = null;
-      this.getAllBooks();
-      this.getAllAuthors();
-      this.getAllMembers();
-      this.getAllLoans();
+      this.search();
     });
   }
 
@@ -221,10 +216,7 @@ export class AppComponent {
     this.http.delete(`${this.apiUrl}/${this.view}/${this.beingDeletedId}`).subscribe(() => {
       this.showDeleteConfirmation = false;
       this.beingDeletedId = null;
-      this.getAllBooks();
-      this.getAllAuthors();
-      this.getAllMembers();
-      this.getAllLoans();
+      this.search();
     });
   }
 

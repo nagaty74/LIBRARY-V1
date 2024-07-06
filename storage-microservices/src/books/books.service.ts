@@ -29,6 +29,11 @@ export class BooksService {
   }
 
   async search(query: string): Promise<Book[]> {
-    return this.bookModel.find({ title: { $regex: query, $options: 'i' } }).exec();
+    return this.bookModel.find({
+      $or: [
+        { title: { $regex: query, $options: 'i' } },
+        { author: { $regex: query, $options: 'i' } }
+      ]
+    }).exec();
   }
 }

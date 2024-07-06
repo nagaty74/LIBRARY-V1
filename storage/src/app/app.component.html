@@ -4,7 +4,11 @@
 <body>
 
   <section data-bs-version="5.1" class="menu menu5 cid-udIl27BACG" once="menu" id="menu05-0">
-
+    <div class="search-bar" style="margin-top: 100px; text-align: center;">
+      <input type="text" [(ngModel)]="searchQuery" placeholder="Search..." />
+      <button (click)="search()" class="btn btn-primary">Search</button>
+    </div>
+    
     <nav class="navbar navbar-dropdown navbar-fixed-top navbar-expand-lg">
       <div class="container">
         <div class="navbar-brand">
@@ -25,13 +29,7 @@
         </button>
         <div class="collapse navbar-collapse" id="navbarSupportedContent">
           <ul class="navbar-nav nav-dropdown nav-right" data-app-modern-menu="true">
-            <li class="nav-item" *ngIf="view != 'all'">
-              <button class="nav-link link text-black display-4" (click)="setView('all')">All</button>
-            </li>
-            <!-- <li class="nav-item" *ngIf="view == 'all'">
-              <button class="nav-link link text-grey display-4">All</button>
-            </li> -->
-
+        
             <li class="nav-item" *ngIf="view != 'books'">
               <button class="nav-link link text-black display-4" (click)="setView('books')">Books</button>
             </li>
